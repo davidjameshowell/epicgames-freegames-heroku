@@ -62,6 +62,8 @@ function heroku_bootstrap {
 }
 
 function build_image {
+    git_clone "${GIT_HASH}"
+
     cd "${SCRIPTPATH}"
     printf "Logging into Heroku Container Registry to push the image (this will add an entry in your Docker config)"
     heroku container:login
@@ -114,10 +116,6 @@ login_heroku
 printf "App_Name: $APP_NAME";
 printf "Git Hash: $GIT_HASH";
 
-git_clone "${GIT_HASH}"
-
-cd "${SCRIPTPATH}"
-
 if [[ ${STRATEGY_TYPE} = "deploy" ]]
 then
     printf "Run Heroku bootstrapping for app and Dyno creations."
@@ -133,9 +131,10 @@ then
 elif [[ ${STRATEGY_TYPE} = "cookie" ]]
 then
     login_heroku
-    echo | redis-cli -u $(heroku config:get REDISTOGO_URL -a "${APP_NAME}") set EMAIL_COOKIE ${TEMPORARY_EMAIL_COOKIE} > /dev/null
+    redis-cli -u $(heroku config:get REDISTOGO_URL -a "${APP_NAME}") set EMAIL_COOKIE ${TEMPORARY_EMAIL_COOKIE} > /dev/null
     exit 0
 else
+    # Update
     APP_NAME=${APP_NAME}
     build_image
     printf "Congrats! Your new EpicGames FreeGames instance is ready to use! Since we are using Github actions, we can make sure we restart this process daily!"
