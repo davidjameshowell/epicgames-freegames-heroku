@@ -49,9 +49,8 @@ function heroku_bootstrap {
     heroku config:set SMTP_SECURE="false" -a "${APP_NAME}" > /dev/null
     heroku config:set SMTP_USERNAME="$(heroku config:get MAILGUN_SMTP_LOGIN -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
     heroku config:set SMTP_PASSWORD="$(heroku config:get MAILGUN_SMTP_PASSWORD -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
-    heroku config:set EMAIL_ADDRESS="${EMAIL_ADDRESS}" -a "${APP_NAME}" > /dev/null
+    heroku config:set EMAIL="${EMAIL_ADDRESS}" -a "${APP_NAME}" > /dev/null
     heroku config:set PASSWORD="${EPIC_GAMES_PASSWORD}" -a "${APP_NAME}" > /dev/null
-    
     heroku config:set BASE_URL="${APP_NAME}.herokuapp.com" -a "${APP_NAME}" > /dev/null
 
     printf "Set run once parameters."
