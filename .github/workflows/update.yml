@@ -14,7 +14,7 @@ env:
 
 jobs:
   update_app:
-    name: Create EpicGamesFreeGames app on Heroku, build, and deploy.
+    name: Update EpicGamesFreeGames app on Heroku.
     runs-on: ubuntu-latest
     steps:
     - uses: docker-practice/actions-setup-docker@master

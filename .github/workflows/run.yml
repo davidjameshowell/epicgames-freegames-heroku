@@ -14,7 +14,7 @@ env:
 
 jobs:
   run_app:
-    name: Run EpicGamesFreeGames app on Heroku.
+    name: Update EpicGamesFreeGames app on Heroku.
     runs-on: ubuntu-latest
     steps:
     - uses: docker-practice/actions-setup-docker@master
@@ -26,4 +26,4 @@ jobs:
         fetch-depth: 1
     - run: curl https://cli-assets.heroku.com/install.sh | sh
     - run: sudo apt update && sudo apt install jq openssl redis-c -y
-    - run: bash deploy_update_app.sh -a $APP_NAME -g $GIT_HASH -t run
+    - run: bash deploy_update_app.sh -a $APP_NAME -t run
