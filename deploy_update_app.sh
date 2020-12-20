@@ -71,6 +71,10 @@ function build_image {
     printf "Now we will build the image to deploy to Heroku with the specified port changes"
     cd ./${EPICGAMES_FREEGAMES_FOLDER}
     
+    # Actions debug mode
+    pwd
+    ls
+    
     printf "Heroku uses random ports for assignment with httpd services. We are modifying the SERVER_PORT in entrypoint for startup."
     sed_files '2 a export SERVER_PORT=\$PORT\n' ./entrypoint.sh
     sed_files '3 a touch /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./entrypoint.sh
@@ -78,7 +82,7 @@ function build_image {
     sed_files '$a echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL set -x EMAIL_COOKIE' ./entrypoint.sh
 
     # Dockerfile manipulation to install redis
-    sed_files 's/jq tzdata/jq tzdata redis/g' ./${EPICGAMES_FREEGAMES_FOLDER}/Dockerfile
+    sed_files 's/jq tzdata/jq tzdata redis/g' ./Dockerfile
     
     heroku container:push web -a "${APP_NAME}"
 
