@@ -58,7 +58,7 @@ function heroku_bootstrap {
     heroku config:set RUN_ONCE="true" -a "${APP_NAME}"
     
     printf "Add in initial cookie configuration for Redis, supress output"
-    echo ${TEMPORARY_EMAIL_COOKIE} | redis-cli -u $(heroku config:get REDISTOGO_URL -a "${APP_NAME}") set -x EMAIL_COOKIE > /dev/null
+    redis-cli -u $(heroku config:get REDISTOGO_URL -a "${APP_NAME}") set EMAIL_COOKIE ${TEMPORARY_EMAIL_COOKIE} > /dev/null
 }
 
 function build_image {
@@ -126,6 +126,11 @@ then
     login_heroku
     heroku restart -a ${APP_NAME}
     printf "Check the logs in Heroku, as they may contain sensitive details we don't want to print here!"
+    exit 0
+elif [[ ${STRATEGY_TYPE} = "cookie" ]]
+then
+    login_heroku
+    echo | redis-cli -u $(heroku config:get REDISTOGO_URL -a "${APP_NAME}") set EMAIL_COOKIE ${TEMPORARY_EMAIL_COOKIE} > /dev/null
     exit 0
 else
     APP_NAME=${APP_NAME}
