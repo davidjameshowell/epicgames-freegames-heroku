@@ -1,15 +1,15 @@
 # epicgames-freegames-node on Heroku for Free!
-Deploy [epicgmaes-freegames-node](https://github.com/claabs/epicgames-freegames-node) in Heroku for free via Github1
+Deploy [epicgames-freegames-node](https://github.com/claabs/epicgames-freegames-node) in Heroku for free via Github1
 
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/davidjameshowell/epcigames-freegames-heroku/EpicGamesFreeGamesDeploy/main?label=Deploy%20EpicGames-FreeGames-Node&style=for-the-badge)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/davidjameshowell/epicgames-freegames-heroku/EpicGamesFreeGamesDeploy/main?label=Deploy%20EpicGames-FreeGames-Node&style=for-the-badge)
 
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/davidjameshowell/epcigames-freegames-heroku/EpicGamesFreeGamesRun/main?label=Run%20EpicGames-FreeGames-Node&style=for-the-badge)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/davidjameshowell/epicgames-freegames-heroku/EpicGamesFreeGamesRun/main?label=Run%20EpicGames-FreeGames-Node&style=for-the-badge)
 
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/davidjameshowell/epcigames-freegames-heroku/EpicGamesFreeGamesUpdate/main?label=Update%20EpicGames-FreeGames-Node&style=for-the-badge)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/davidjameshowell/epicgames-freegames-heroku/EpicGamesFreeGamesUpdate/main?label=Update%20EpicGames-FreeGames-Node&style=for-the-badge)
 
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/davidjameshowell/epcigames-freegames-heroku/EpicGamesFreeGamesResetCookie/main?label=Reset%20cookie%20EpicGames-FreeGames-Node&style=for-the-badge)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/davidjameshowell/epicgames-freegames-heroku/EpicGamesFreeGamesResetCookie/main?label=Reset%20cookie%20EpicGames-FreeGames-Node&style=for-the-badge)
 
-[![CodeFactor](https://www.codefactor.io/repository/github/davidjameshowell/epcigames-freegames-heroku/badge)](https://www.codefactor.io/repository/github/davidjameshowell/epcigames-freegames-heroku)
+[![CodeFactor](https://www.codefactor.io/repository/github/davidjameshowell/epicgames-freegames-heroku/badge)](https://www.codefactor.io/repository/github/davidjameshowell/epicgames-freegames-heroku)
 
 ## Features
 * Build and deploy cutomized EpicGames-FreeGames-node image from source to Heroku via Github Actions
