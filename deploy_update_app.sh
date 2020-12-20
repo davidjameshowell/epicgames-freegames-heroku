@@ -58,7 +58,7 @@ function heroku_bootstrap {
     heroku config:set RUN_ONCE="true" -a "${APP_NAME}"
     
     printf "Add in initial cookie configuration for Redis, supress output.\n"
-    redis-cli -u $(heroku config:get REDISTOGO_URL -a "${APP_NAME}") set EMAIL_COOKIE ${TEMPORARY_EMAIL_COOKIE} > /dev/null
+    redis-cli -u "$(heroku config:get REDISTOGO_URL -a "${APP_NAME}")" set EMAIL_COOKIE "${TEMPORARY_EMAIL_COOKIE}" > /dev/null
 }
 
 function build_image {
@@ -113,8 +113,8 @@ EOF
 }
 
 login_heroku
-printf "App_Name: $APP_NAME\n";
-printf "Git Hash: $GIT_HASH\n";
+printf "App_Name: %s\n" "$APP_NAME";
+printf "Git Hash: %s\n" "$GIT_HASH";
 
 if [[ ${STRATEGY_TYPE} = "deploy" ]]
 then
@@ -125,18 +125,16 @@ then
 elif [[ ${STRATEGY_TYPE} = "run" ]]
 then
     login_heroku
-    heroku restart -a ${APP_NAME}
+    heroku restart -a "${APP_NAME}"
     printf "Check the logs in Heroku, as they may contain sensitive details we don't want to print here!\n"
     exit 0
 elif [[ ${STRATEGY_TYPE} = "cookie" ]]
 then
     login_heroku
-    redis-cli -u $(heroku config:get REDISTOGO_URL -a "${APP_NAME}") set EMAIL_COOKIE ${TEMPORARY_EMAIL_COOKIE} > /dev/null
+    redis-cli -u "$(heroku config:get REDISTOGO_URL -a "${APP_NAME}")" set EMAIL_COOKIE "${TEMPORARY_EMAIL_COOKIE}" > /dev/null
     exit 0
 else
     # Update
-    APP_NAME=${APP_NAME}
     build_image
     printf "Congrats! Your new EpicGames FreeGames instance is ready to use! Since we are using Github actions, we can make sure we restart this process hourly!\n"
 fi
-
