@@ -67,6 +67,7 @@ function build_image {
 
     printf "Now we will build the image to deploy to Heroku with the specified port changes"
     cd ./${EPICGAMES_FREEGAMES_FOLDER}
+    modify_files
     heroku container:push web -a "${APP_NAME}"
 
     printf "Now we can release the app which will publish it"
@@ -99,6 +100,18 @@ machine git.heroku.com
 EOF
 }
 
+function modify_files {
+    printf "Heroku uses random ports for assignment with httpd services. We are modifying the SERVER_PORT in entrypoint for startup."
+
+    sed_files '2 a export SERVER_PORT=\$PORT\n' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
+    sed_files '3 a touch /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
+    sed_files '4 a redis-cli -u \$REDISTOGO_URL get EMAIL_COOKIE | base64 -d > /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
+    sed_files '$a echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL set -x EMAIL_COOKIE' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
+
+    # Dockerfile manipulation to install redis
+    sed_files 's/jq tzdata/jq tzdata redis/g' ./${EPICGAMES_FREEGAMES_FOLDER}/Dockerfile
+}
+
 login_heroku
 printf "App_Name: $APP_NAME";
 printf "Git Hash: $GIT_HASH";
@@ -107,20 +120,13 @@ git_clone "${GIT_HASH}"
 
 cd "${SCRIPTPATH}"
 
-printf "Heroku uses random ports for assignment with httpd services. We are modifying the SERVER_PORT in entrypoint for startup."
-
-sed_files '2 a export SERVER_PORT=\$PORT\n' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
-sed_files '3 a touch /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
-sed_files '4 a redis-cli -u \$REDISTOGO_URL get EMAIL_COOKIE | base64 -d > /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
-sed_files '$a echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL set -x EMAIL_COOKIE' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
-
-# Dockerfile manipulation to install redis
-sed_files 's/jq tzdata/jq tzdata redis/g' ./${EPICGAMES_FREEGAMES_FOLDER}/Dockerfile
 
 if [[ ${STRATEGY_TYPE} = "deploy" ]]
 then
     printf "Run Heroku bootstrapping for app and Dyno creations."
     heroku_bootstrap "${APP_NAME}"
+    build_image
+    printf "Congrats! Your new EpicGames FreeGames instance is ready to use! Since we are using Github actions, we can make sure we restart this process daily!"
 elif [[ ${STRATEGY_TYPE} = "run" ]]
 then
     login_heroku
@@ -134,7 +140,7 @@ then
     exit 0
 else
     APP_NAME=${APP_NAME}
+    build_image
+    printf "Congrats! Your new EpicGames FreeGames instance is ready to use! Since we are using Github actions, we can make sure we restart this process daily!"
 fi
 
-build_image
-printf "Congrats! Your new EpicGames FreeGames instance is ready to use! Since we are using Github actions, we can make sure we restart this process daily!"
