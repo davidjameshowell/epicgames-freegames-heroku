@@ -67,7 +67,16 @@ function build_image {
 
     printf "Now we will build the image to deploy to Heroku with the specified port changes"
     cd ./${EPICGAMES_FREEGAMES_FOLDER}
-    modify_files
+    
+    printf "Heroku uses random ports for assignment with httpd services. We are modifying the SERVER_PORT in entrypoint for startup."
+    sed_files '2 a export SERVER_PORT=\$PORT\n' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
+    sed_files '3 a touch /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
+    sed_files '4 a redis-cli -u \$REDISTOGO_URL get EMAIL_COOKIE | base64 -d > /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
+    sed_files '$a echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL set -x EMAIL_COOKIE' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
+
+    # Dockerfile manipulation to install redis
+    sed_files 's/jq tzdata/jq tzdata redis/g' ./${EPICGAMES_FREEGAMES_FOLDER}/Dockerfile
+    
     heroku container:push web -a "${APP_NAME}"
 
     printf "Now we can release the app which will publish it"
@@ -98,19 +107,6 @@ machine git.heroku.com
     login ${HEROKU_EMAIL}
     password ${HEROKU_API_KEY}
 EOF
-}
-
-function modify_files {
-    cd "${SCRIPTPATH}"
-    printf "Heroku uses random ports for assignment with httpd services. We are modifying the SERVER_PORT in entrypoint for startup."
-
-    sed_files '2 a export SERVER_PORT=\$PORT\n' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
-    sed_files '3 a touch /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
-    sed_files '4 a redis-cli -u \$REDISTOGO_URL get EMAIL_COOKIE | base64 -d > /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
-    sed_files '$a echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL set -x EMAIL_COOKIE' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
-
-    # Dockerfile manipulation to install redis
-    sed_files 's/jq tzdata/jq tzdata redis/g' ./${EPICGAMES_FREEGAMES_FOLDER}/Dockerfile
 }
 
 login_heroku
