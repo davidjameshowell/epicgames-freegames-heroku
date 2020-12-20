@@ -101,6 +101,7 @@ EOF
 }
 
 function modify_files {
+    cd "${SCRIPTPATH}"
     printf "Heroku uses random ports for assignment with httpd services. We are modifying the SERVER_PORT in entrypoint for startup."
 
     sed_files '2 a export SERVER_PORT=\$PORT\n' ./${EPICGAMES_FREEGAMES_FOLDER}/entrypoint.sh
@@ -119,7 +120,6 @@ printf "Git Hash: $GIT_HASH";
 git_clone "${GIT_HASH}"
 
 cd "${SCRIPTPATH}"
-
 
 if [[ ${STRATEGY_TYPE} = "deploy" ]]
 then
