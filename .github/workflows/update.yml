@@ -1,0 +1,29 @@
+name: EpicGamesFreeGamesUpdate
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+  GIT_HASH: master
+  HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+  HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+  EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+
+jobs:
+  update_app:
+    name: Create EpicGamesFreeGames app on Heroku, build, and deploy.
+    runs-on: ubuntu-latest
+    steps:
+    - uses: docker-practice/actions-setup-docker@master
+      with:
+        docker_channel: stable
+        # this value please see https://github.com/AkihiroSuda/moby-snapshot/releases
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+    - run: curl https://cli-assets.heroku.com/install.sh | sh
+    - run: sudo apt update && sudo apt install jq openssl redis-cli -y
+    - run: bash deploy_update_app.sh -a $APP_NAME -g $GIT_HASH -t update

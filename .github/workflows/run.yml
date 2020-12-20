@@ -1,0 +1,29 @@
+name: EpicGamesFreeGamesRun
+
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    # Run every hour, on the hour
+    - cron:  '* 0-23 * * *'
+  workflow_dispatch:
+
+env:
+  APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+  HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+  HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+jobs:
+  run_app:
+    name: Run EpicGamesFreeGames app on Heroku.
+    runs-on: ubuntu-latest
+    steps:
+    - uses: docker-practice/actions-setup-docker@master
+      with:
+        docker_channel: stable
+        # this value please see https://github.com/AkihiroSuda/moby-snapshot/releases
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+    - run: curl https://cli-assets.heroku.com/install.sh | sh
+    - run: sudo apt update && sudo apt install jq openssl redis-cli -y
+    - run: bash deploy_update_app.sh -a $APP_NAME -g $GIT_HASH -t run
