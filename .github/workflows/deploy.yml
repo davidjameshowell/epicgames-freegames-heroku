@@ -9,6 +9,7 @@ env:
   HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
   EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+  EPIC_GAMES_PASSWORD: ${{ secrets.EPIC_GAMES_PASSWORD }}
   TEMPORARY_EMAIL_COOKIE: ${{ secrets.TEMPORARY_EMAIL_COOKIE }}
 
 jobs:
@@ -24,5 +25,5 @@ jobs:
       with:
         fetch-depth: 1
     - run: curl https://cli-assets.heroku.com/install.sh | sh
-    - run: sudo apt update && sudo apt install jq openssl redis-cli -y
+    - run: sudo apt update && sudo apt install jq openssl redis -y
     - run: bash deploy_update_app.sh -a $APP_NAME -g $GIT_HASH -t update
