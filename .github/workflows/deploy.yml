@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+  APP_NAME: ${{ secrets.APP_NAME }}
   GIT_HASH: master
   HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
