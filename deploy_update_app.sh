@@ -62,6 +62,7 @@ function heroku_bootstrap {
 }
 
 function build_image {
+    cd "${SCRIPTPATH}"
     printf "Logging into Heroku Container Registry to push the image (this will add an entry in your Docker config)"
     heroku container:login
 
