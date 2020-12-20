@@ -8,11 +8,11 @@ EPICGAMES_FREEGAMES_FOLDER="epicgames-freegames-node"
 STRATEGY_TYPE="deploy"
 
 # Clean out any existing contents
-rm -rf ./epicgames-freegames-node
+rm -rf ./${EPICGAMES_FREEGAMES_FOLDER}
 
 function git_clone {
     GIT_HASH=$1
-    printf "Clone current bitwarden_rs with depth 1"
+    printf "Clone current epicgames-freegames-node with depth 1\n"
     git clone --depth 1 https://github.com/claabs/epicgames-freegames-node.git
     cd ./${EPICGAMES_FREEGAMES_FOLDER}
     git checkout "${GIT_HASH}"
@@ -27,20 +27,20 @@ function heroku_bootstrap {
 
     APP_NAME=$1
 
-    printf "Logging into Heroku Container Registry to push the image (this will add an entry in your Docker config, if running locally)"
+    printf "Logging into Heroku Container Registry to push the image (this will add an entry in your Docker config, if running locally)\n"
     heroku container:login
 
-    printf "We must create a Heroku application to deploy to first."
+    printf "We must create a Heroku application to deploy to first.\n"
     APP_NAME=$(heroku create "${APP_NAME}" --json | jq --raw-output '.name')
 
-    printf "We will use MailGun Starter edition, which is free and sufficient for our SMTP purposes"
+    printf "We will use MailGun Starter edition, which is free and sufficient for our SMTP purposes.\n"
     heroku addons:create mailgun:starter -a "$APP_NAME"
     
-    printf "We will use RedisToGo Nano edition, which is free and sufficient for our cookie purposes"
+    printf "We will use RedisToGo Nano edition, which is free and sufficient for our cookie purposes.\n"
     heroku addons:create redistogo:nano -a "$APP_NAME"
 
-    printf "Now we will configure all the required SMTP settings as well as email address "
-    printf "Supressing output due to sensitive nature."
+    printf "Now we will configure all the required SMTP settings as well as email address\n"
+    printf "Supressing output due to sensitive nature.\n"
     heroku config:set SMTP_HOST="$(heroku config:get MAILGUN_SMTP_SERVER -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
     heroku config:set SMTP_PORT="$(heroku config:get MAILGUN_SMTP_PORT -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
     heroku config:set EMAIL_SENDER_ADDRESS="$(heroku config:get MAILGUN_SMTP_LOGIN -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
@@ -53,11 +53,11 @@ function heroku_bootstrap {
     heroku config:set PASSWORD="${EPIC_GAMES_PASSWORD}" -a "${APP_NAME}" > /dev/null
     heroku config:set BASE_URL="https://${APP_NAME}.herokuapp.com/" -a "${APP_NAME}" > /dev/null
 
-    printf "Set run once parameters."
+    printf "Set run once parameters.\n"
     heroku config:set RUN_ON_STARTUP="true" -a "${APP_NAME}"
     heroku config:set RUN_ONCE="true" -a "${APP_NAME}"
     
-    printf "Add in initial cookie configuration for Redis, supress output"
+    printf "Add in initial cookie configuration for Redis, supress output.\n"
     redis-cli -u $(heroku config:get REDISTOGO_URL -a "${APP_NAME}") set EMAIL_COOKIE ${TEMPORARY_EMAIL_COOKIE} > /dev/null
 }
 
@@ -65,17 +65,13 @@ function build_image {
     git_clone "${GIT_HASH}"
 
     cd "${SCRIPTPATH}"
-    printf "Logging into Heroku Container Registry to push the image (this will add an entry in your Docker config)"
+    printf "Logging into Heroku Container Registry to push the image (this will add an entry in your Docker config)\n"
     heroku container:login
 
-    printf "Now we will build the image to deploy to Heroku with the specified port changes"
+    printf "Now we will build the image to deploy to Heroku with the specified port changes\n"
     cd ./${EPICGAMES_FREEGAMES_FOLDER}
     
-    # Actions debug mode
-    pwd
-    ls
-    
-    printf "Heroku uses random ports for assignment with httpd services. We are modifying the SERVER_PORT in entrypoint for startup."
+    printf "Heroku uses random ports for assignment with httpd services. We are modifying the SERVER_PORT in entrypoint for startup.\n"
     sed_files '2 a export SERVER_PORT=\$PORT\n' ./entrypoint.sh
     sed_files '3 a touch /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./entrypoint.sh
     sed_files '4 a redis-cli -u \$REDISTOGO_URL get EMAIL_COOKIE | base64 -d > /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./entrypoint.sh
@@ -86,12 +82,12 @@ function build_image {
     
     heroku container:push web -a "${APP_NAME}"
 
-    printf "Now we can release the app which will publish it"
+    printf "Now we can release the app which will publish it.\n"
     heroku container:release web -a "${APP_NAME}"
 }
 
 function help {
-    printf "Welcome to help!\Use option -a for app name,\n -g to set a git hash to clone epicgames-freegames-node from,\n and -t to specify if deployment, run, or update!"
+    printf "Welcome to help!\Use option -a for app name,\n -g to set a git hash to clone epicgames-freegames-node from,\n and -t to specify if deployment, run, or update!\n"
 }
 
 while getopts a:g:t: flag
@@ -105,7 +101,7 @@ do
 done
 
 function login_heroku {
-printf "Modify netrc file to include Heroku details"
+printf "Modify netrc file to include Heroku details.\n"
 cat >~/.netrc <<EOF
 machine api.heroku.com
     login ${HEROKU_EMAIL}
@@ -117,20 +113,20 @@ EOF
 }
 
 login_heroku
-printf "App_Name: $APP_NAME";
-printf "Git Hash: $GIT_HASH";
+printf "App_Name: $APP_NAME\n";
+printf "Git Hash: $GIT_HASH\n";
 
 if [[ ${STRATEGY_TYPE} = "deploy" ]]
 then
-    printf "Run Heroku bootstrapping for app and Dyno creations."
+    printf "Run Heroku bootstrapping for app and Dyno creations.\n"
     heroku_bootstrap "${APP_NAME}"
     build_image
-    printf "Congrats! Your new EpicGames FreeGames instance is ready to use! Since we are using Github actions, we can make sure we restart this process daily!"
+    printf "Congrats! Your new EpicGames FreeGames instance is ready to use! Since we are using Github actions, we can make sure we restart this process daily!\n"
 elif [[ ${STRATEGY_TYPE} = "run" ]]
 then
     login_heroku
     heroku restart -a ${APP_NAME}
-    printf "Check the logs in Heroku, as they may contain sensitive details we don't want to print here!"
+    printf "Check the logs in Heroku, as they may contain sensitive details we don't want to print here!\n"
     exit 0
 elif [[ ${STRATEGY_TYPE} = "cookie" ]]
 then
@@ -141,6 +137,6 @@ else
     # Update
     APP_NAME=${APP_NAME}
     build_image
-    printf "Congrats! Your new EpicGames FreeGames instance is ready to use! Since we are using Github actions, we can make sure we restart this process daily!"
+    printf "Congrats! Your new EpicGames FreeGames instance is ready to use! Since we are using Github actions, we can make sure we restart this process hourly!\n"
 fi
 
