@@ -5,16 +5,17 @@ on:
 
 env:
   APP_NAME: ${{ secrets.APP_NAME }}
+  EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+  EPIC_GAMES_PASSWORD: ${{ secrets.EPIC_GAMES_PASSWORD }}
   GIT_HASH: master
   HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-  EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
-  EPIC_GAMES_PASSWORD: ${{ secrets.EPIC_GAMES_PASSWORD }}
   TEMPORARY_EMAIL_COOKIE: ${{ secrets.TEMPORARY_EMAIL_COOKIE }}
+  TOTP_MFA: ${{ secrets.TOTP_MFA }}
 
 jobs:
   create_and_deploy_app:
-    name: Create EpicGamesFreeGames app on Heroku, build, and deploy.
+    name: Deploy EpicGamesFreeGames app on Heroku.
     runs-on: ubuntu-latest
     steps:
     - uses: docker-practice/actions-setup-docker@master
@@ -26,4 +27,4 @@ jobs:
         fetch-depth: 1
     - run: curl https://cli-assets.heroku.com/install.sh | sh
     - run: sudo apt update && sudo apt install jq openssl redis -y
-    - run: bash deploy_update_app.sh -a $APP_NAME -g $GIT_HASH -t deploy
+    - run: bash deploy_update_app.sh -a $APP_NAME -g $GIT_HASH -t deploy -o TOTP_MFA
