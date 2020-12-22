@@ -42,6 +42,21 @@ You should be following the instructions listed [here](https://github.com/claabs
 You will then take this cookie and [base64 encode it, suggested site attached](https://www.base64encode.org/). Then add this in as a secret in your Github forked repo.
 
 Should you have any issues with your token in running the application, you can reset the token by doing the steps above and then running the EpicGamesFreeGamesResetCookie Github Actions workflow.
+
+### Email CAPTCHA Support
+
+Email captchas are supported with this mechanism and are suppoorted by Mailgun. We are using Mailgun's sandboxed mode which requires you to manually verify your domain in order to prevent the service from being used as spam.
+
+In order to verify your email address (the variable used for EMAIL_ADDRESS):
+1. Go to your app dashboard in Heroku, find the Mailgun addon.
+2. Click on the Mailgun addon to get SSO redirected to Mailgun dashboard.
+3. Then find the "Sending" tab in Mailgun.
+4. Click on the default domain (sandbox).
+5. On the right hand side, you will see a field entitled "Authorized Recipients".
+6. Enter your email address and Save Recipient.
+7. Wait for an email to arrive - **THIS EMAIL WILL MOST LIKELY LAND IN YOUR SPAM BOX**.
+8. Click the click in the email and then Yes on the webpage that is presented.
+9. Captcha emails will now be delivered to your email, again **PLEASE CHECK IN YOUR SPAM FOLDER WHEN OUTPUT SPECIFIES CAPTCHA IS NEEDED**.
  
 ### Update
 
