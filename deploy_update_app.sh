@@ -58,7 +58,7 @@ function heroku_bootstrap {
     then
         printf "Also adding in MFA OTP code to be solved.\n"
         printf "Supressing output due to sensitive nature.\n"
-        heroku config:set TOTP="${OTP_MFA}" -a "${APP_NAME}" > /dev/null
+        heroku config:set TOTP="${TOTP_MFA}" -a "${APP_NAME}" > /dev/null
     fi
 
     printf "Set run once parameters.\n"
