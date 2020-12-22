@@ -34,6 +34,14 @@ Usage is simply, fast, and user friendly! The application will run each hour aft
   * TEMPORARY_EMAIL_COOKIE (a base64 encoded starting cookie, please see temporary cookie generation below)
 4. Navigate to Github Actions and run the job EpicGamesFreeGamesDeploy workflow and begin deploying the app. This will take around 5-8 minutes.
 5. Congrats, you now having a fully functional EpicGames-FreeGames-node instance in Heroku!
+
+### Update
+
+Updating is simple and can be done one of two ways:
+* Running the workflow manually via Github Actions
+* Making a commit to the main branch, forcing a Github Actions workflow to initiate an update workflow
+ 
+Either one of these will force the Github Actions workflow to run and update the app. If you need to modify to enable/disable settings, you should re-run it as well.
  
 ### Temporary Cookie Generation and Reset Mechanism
 
@@ -42,17 +50,18 @@ You should be following the instructions listed [here](https://github.com/claabs
 You will then take this cookie and [base64 encode it, suggested site attached](https://www.base64encode.org/). Then add this in as a secret in your Github forked repo.
 
 Should you have any issues with your token in running the application, you can reset the token by doing the steps above and then running the EpicGamesFreeGamesResetCookie Github Actions workflow.
- 
-### Update
 
-Updating is simple and can be done one of two ways:
-* Running the workflow manually via Github Actions
-* Making a commit to the main branch, forcing a Github Actions workflow to initiate an update workflow
- 
-Either one of these will force the Github Actions workflow to run and update the app. If you need to modify to enable/disable settings, you should re-run it as well.
+### Email CAPTCHA Support
 
-# Notes to consider
+Email captchas are supported with this mechanism and are suppoorted by Mailgun. We are using Mailgun's sandboxed mode which requires you to manually verify your domain in order to prevent the service from being used as spam.
 
-Currently this was tested with both 2FA disabled and enabled, but it appears as long as you have the cookies refreshed periodically, it does not prompt for 2FA. It may be the current games offered do not currently require 2FA.
-
-The other concern is around the captcha support. The application is setup for captcha email support, but requires additional configuration with Mailgun to add your email address as an approved sender (due to sandboxed mode).
+In order to verify your email address (the variable used for EMAIL_ADDRESS):
+1. Go to your app dashboard in Heroku, find the Mailgun addon.
+2. Click on the Mailgun addon to get SSO redirected to Mailgun dashboard.
+3. Then find the "Sending" tab in Mailgun.
+4. Click on the default domain (sandbox).
+5. On the right hand side, you will see a field entitled "Authorized Recipients".
+6. Enter your email address and Save Recipient.
+7. Wait for an email to arrive - **THIS EMAIL WILL MOST LIKELY LAND IN YOUR SPAM BOX**.
+8. Click the click in the email and then Yes on the webpage that is presented.
+9. Captcha emails will now be delivered to your email, again **PLEASE CHECK IN YOUR SPAM FOLDER WHEN OUTPUT SPECIFIES CAPTCHA IS NEEDED**.
