@@ -34,6 +34,14 @@ Usage is simply, fast, and user friendly! The application will run each hour aft
   * TEMPORARY_EMAIL_COOKIE (a base64 encoded starting cookie, please see temporary cookie generation below)
 4. Navigate to Github Actions and run the job EpicGamesFreeGamesDeploy workflow and begin deploying the app. This will take around 5-8 minutes.
 5. Congrats, you now having a fully functional EpicGames-FreeGames-node instance in Heroku!
+
+### Update
+
+Updating is simple and can be done one of two ways:
+* Running the workflow manually via Github Actions
+* Making a commit to the main branch, forcing a Github Actions workflow to initiate an update workflow
+ 
+Either one of these will force the Github Actions workflow to run and update the app. If you need to modify to enable/disable settings, you should re-run it as well.
  
 ### Temporary Cookie Generation and Reset Mechanism
 
@@ -57,17 +65,3 @@ In order to verify your email address (the variable used for EMAIL_ADDRESS):
 7. Wait for an email to arrive - **THIS EMAIL WILL MOST LIKELY LAND IN YOUR SPAM BOX**.
 8. Click the click in the email and then Yes on the webpage that is presented.
 9. Captcha emails will now be delivered to your email, again **PLEASE CHECK IN YOUR SPAM FOLDER WHEN OUTPUT SPECIFIES CAPTCHA IS NEEDED**.
- 
-### Update
-
-Updating is simple and can be done one of two ways:
-* Running the workflow manually via Github Actions
-* Making a commit to the main branch, forcing a Github Actions workflow to initiate an update workflow
- 
-Either one of these will force the Github Actions workflow to run and update the app. If you need to modify to enable/disable settings, you should re-run it as well.
-
-# Notes to consider
-
-Currently this was tested with both 2FA disabled and enabled, but it appears as long as you have the cookies refreshed periodically, it does not prompt for 2FA. It may be the current games offered do not currently require 2FA.
-
-The other concern is around the captcha support. The application is setup for captcha email support, but requires additional configuration with Mailgun to add your email address as an approved sender (due to sandboxed mode).
