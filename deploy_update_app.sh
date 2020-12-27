@@ -24,22 +24,7 @@ function sed_files {
     sed -i "$1" "$2"
 }
 
-function heroku_bootstrap {
-
-    APP_NAME=$1
-
-    printf "Logging into Heroku Container Registry to push the image (this will add an entry in your Docker config, if running locally)\n"
-    heroku container:login
-
-    printf "We must create a Heroku application to deploy to first.\n"
-    APP_NAME=$(heroku create "${APP_NAME}" --json | jq --raw-output '.name')
-
-    printf "We will use MailGun Starter edition, which is free and sufficient for our SMTP purposes.\n"
-    heroku addons:create mailgun:starter -a "$APP_NAME"
-    
-    printf "We will use RedisToGo Nano edition, which is free and sufficient for our cookie purposes.\n"
-    heroku addons:create redistogo:nano -a "$APP_NAME"
-
+function heroku_envar_bootstrap {
     printf "Now we will configure all the required SMTP settings as well as email address\n"
     printf "Supressing output due to sensitive nature.\n"
     heroku config:set SMTP_HOST="$(heroku config:get MAILGUN_SMTP_SERVER -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
@@ -64,6 +49,25 @@ function heroku_bootstrap {
     printf "Set run once parameters.\n"
     heroku config:set RUN_ON_STARTUP="true" -a "${APP_NAME}"
     heroku config:set RUN_ONCE="true" -a "${APP_NAME}"
+}
+
+function heroku_bootstrap {
+
+    APP_NAME=$1
+
+    printf "Logging into Heroku Container Registry to push the image (this will add an entry in your Docker config, if running locally)\n"
+    heroku container:login
+
+    printf "We must create a Heroku application to deploy to first.\n"
+    APP_NAME=$(heroku create "${APP_NAME}" --json | jq --raw-output '.name')
+
+    printf "We will use MailGun Starter edition, which is free and sufficient for our SMTP purposes.\n"
+    heroku addons:create mailgun:starter -a "$APP_NAME"
+    
+    printf "We will use RedisToGo Nano edition, which is free and sufficient for our cookie purposes.\n"
+    heroku addons:create redistogo:nano -a "$APP_NAME"
+    
+    heroku_envar_bootstrap
     
     printf "Add in initial cookie configuration for Redis, supress output.\n"
     redis-cli -u "$(heroku config:get REDISTOGO_URL -a "${APP_NAME}")" set EMAIL_COOKIE "${TEMPORARY_EMAIL_COOKIE}" > /dev/null
@@ -86,7 +90,7 @@ function build_image {
     sed_files '$a echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL set -x EMAIL_COOKIE' ./entrypoint.sh
 
     # Dockerfile manipulation to install redis
-    sed_files 's/jq tzdata/jq tzdata redis/g' ./Dockerfile
+    sed_files 's/tzdata /tzdata redis/g' ./Dockerfile
     
     heroku container:push web -a "${APP_NAME}"
 
@@ -144,6 +148,7 @@ then
     exit 0
 else
     # Update
+    heroku_envar_bootstrap
     build_image
     printf "Congrats! Your new EpicGames FreeGames instance is ready to use! Since we are using Github actions, we can make sure we restart this process hourly!\n"
 fi
