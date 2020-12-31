@@ -32,6 +32,7 @@ Usage is simply, fast, and user friendly! The application will run each hour aft
   * EMAIL_ADDRESS (your Epic Games email address)
   * EPIC_GAMES_PASSWORD (your Epic Games password)
   * TEMPORARY_EMAIL_COOKIE (a base64 encoded starting cookie, please see temporary cookie generation below)
+  * TOTP_MFA (your Epic Games MFA string, not your MFA code, but the string used to generate the code)
 4. Navigate to Github Actions and run the job EpicGamesFreeGamesDeploy workflow and begin deploying the app. This will take around 5-8 minutes.
 5. Congrats, you now having a fully functional EpicGames-FreeGames-node instance in Heroku!
 
@@ -65,3 +66,6 @@ In order to verify your email address (the variable used for EMAIL_ADDRESS):
 7. Wait for an email to arrive - **THIS EMAIL WILL MOST LIKELY LAND IN YOUR SPAM BOX**.
 8. Click the click in the email and then Yes on the webpage that is presented.
 9. Captcha emails will now be delivered to your email, again **PLEASE CHECK IN YOUR SPAM FOLDER WHEN OUTPUT SPECIFIES CAPTCHA IS NEEDED**.
+
+### Notes to consider
+If you enable MFA on your Heroku account after deploying this process, you will need to regenerate the API key and update it within the Github secrets.
