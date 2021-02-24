@@ -87,7 +87,7 @@ function build_image {
     sed_files '2 a export SERVER_PORT=\$PORT\n' ./entrypoint.sh
     sed_files '3 a touch /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./entrypoint.sh
     sed_files '4 a redis-cli -u \$REDISTOGO_URL get EMAIL_COOKIE | base64 -d > /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./entrypoint.sh
-    sed_files '$a echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL set -x EMAIL_COOKIE' ./entrypoint.sh
+    sed_files '$a echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL -x set EMAIL_COOKIE' ./entrypoint.sh
 
     # Dockerfile manipulation to install redis
     sed_files 's/tzdata /tzdata redis/g' ./Dockerfile
