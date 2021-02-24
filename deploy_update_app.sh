@@ -31,7 +31,7 @@ function heroku_envar_bootstrap {
     heroku config:set SMTP_PORT="465" -a "${APP_NAME}" > /dev/null
     heroku config:set EMAIL_SENDER_ADDRESS="$(heroku config:get MAILGUN_SMTP_LOGIN -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
     heroku config:set EMAIL_SENDER_NAME="[${APP_NAME}] Epic Games Free Captcha" -a "${APP_NAME}" > /dev/null
-    heroku config:set EMAIL_RECIPIENT_ADDRESS="${EMAIL_ADDRESS:-$HEROKU_EMAIL}" -a "${APP_NAME}" > /dev/null
+    heroku config:set EMAIL_RECIPIENT_ADDRESS="${EMAIL_ADDRESS}" -a "${APP_NAME}" > /dev/null
     heroku config:set SMTP_SECURE="true" -a "${APP_NAME}" > /dev/null
     heroku config:set SMTP_USERNAME="$(heroku config:get MAILGUN_SMTP_LOGIN -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
     heroku config:set SMTP_PASSWORD="$(heroku config:get MAILGUN_SMTP_PASSWORD -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
@@ -113,19 +113,6 @@ do
     esac
 done
 
-function login_heroku {
-printf "Modify netrc file to include Heroku details.\n"
-cat >~/.netrc <<EOF
-machine api.heroku.com
-    login ${HEROKU_EMAIL}
-    password ${HEROKU_API_KEY}
-machine git.heroku.com
-    login ${HEROKU_EMAIL}
-    password ${HEROKU_API_KEY}
-EOF
-}
-
-login_heroku
 printf "App_Name: %s\n" "$APP_NAME";
 printf "Git Hash: %s\n" "$GIT_HASH";
 
@@ -137,13 +124,11 @@ then
     printf "Congrats! Your new EpicGames FreeGames instance is ready to use! Since we are using Github actions, we can make sure we restart this process daily!\n"
 elif [[ ${STRATEGY_TYPE} = "run" ]]
 then
-    login_heroku
     heroku restart -a "${APP_NAME}"
     printf "Check the logs in Heroku, as they may contain sensitive details we don't want to print here!\n"
     exit 0
 elif [[ ${STRATEGY_TYPE} = "cookie" ]]
 then
-    login_heroku
     redis-cli -u "$(heroku config:get REDISTOGO_URL -a "${APP_NAME}")" set EMAIL_COOKIE "${TEMPORARY_EMAIL_COOKIE}" > /dev/null
     exit 0
 else

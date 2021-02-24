@@ -8,7 +8,6 @@ env:
   EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
   EPIC_GAMES_PASSWORD: ${{ secrets.EPIC_GAMES_PASSWORD }}
   GIT_HASH: master
-  HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
   TEMPORARY_EMAIL_COOKIE: ${{ secrets.TEMPORARY_EMAIL_COOKIE }}
   TOTP_MFA: ${{ secrets.TOTP_MFA }}
