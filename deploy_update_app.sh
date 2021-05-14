@@ -70,7 +70,7 @@ function heroku_bootstrap {
     heroku_envar_bootstrap
     
     printf "Add in initial cookie configuration for Redis if configured, supress output.\n"
-    if  [ -n ${TEMPORARY_EMAIL_COOKIE} ]
+    if  [ -n "${TEMPORARY_EMAIL_COOKIE}" ]
     then
         redis-cli -u "$(heroku config:get REDISTOGO_URL -a "${APP_NAME}")" set EMAIL_COOKIE "${TEMPORARY_EMAIL_COOKIE}" > /dev/null
     fi
