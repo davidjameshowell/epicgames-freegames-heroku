@@ -69,8 +69,11 @@ function heroku_bootstrap {
     
     heroku_envar_bootstrap
     
-    printf "Add in initial cookie configuration for Redis, supress output.\n"
-    redis-cli -u "$(heroku config:get REDISTOGO_URL -a "${APP_NAME}")" set EMAIL_COOKIE "${TEMPORARY_EMAIL_COOKIE}" > /dev/null
+    printf "Add in initial cookie configuration for Redis if configured, supress output.\n"
+    if  [ -n "${TEMPORARY_EMAIL_COOKIE}" ]
+    then
+        redis-cli -u "$(heroku config:get REDISTOGO_URL -a "${APP_NAME}")" set EMAIL_COOKIE "${TEMPORARY_EMAIL_COOKIE}" > /dev/null
+    fi
 }
 
 function build_image {
@@ -84,10 +87,10 @@ function build_image {
     cd ./${EPICGAMES_FREEGAMES_FOLDER}
     
     printf "Heroku uses random ports for assignment with httpd services. We are modifying the SERVER_PORT in entrypoint for startup.\n"
+    printf "We are additionally adding logic to capture and set the Email Cookie for continued runs.\n"
     sed_files '2 a export SERVER_PORT=\$PORT\n' ./entrypoint.sh
-    sed_files '3 a touch /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./entrypoint.sh
-    sed_files '4 a redis-cli -u \$REDISTOGO_URL get EMAIL_COOKIE | base64 -d > /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json' ./entrypoint.sh
-    sed_files '$a echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL -x set EMAIL_COOKIE' ./entrypoint.sh
+    sed_files '3 a if ! [ -z $(redis-cli -u \$REDISTOGO_URL get EMAIL_COOKIE) ]; then touch /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json && redis-cli -u \$REDISTOGO_URL get EMAIL_COOKIE | base64 -d > /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json; fi' ./entrypoint.sh
+    sed_files '$a if [ -s /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json ]; then echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL -x set EMAIL_COOKIE; fi' ./entrypoint.sh
 
     # Dockerfile manipulation to install redis
     sed_files 's/tzdata /tzdata redis/g' ./Dockerfile
