@@ -26,7 +26,7 @@ Usage is simply, fast, and user friendly! The application will run each hour aft
 
 1. Create a fork of this project
 2. Go to your forked repo Settings > Secrets and add secrets for:
-  * HEROKU_API_KEY (your Heroku API key - can be found in **[Account Settings](https://dashboard.heroku.com/account)** -> APi Keys)
+  * HEROKU_API_KEY (your Heroku API key - can be found in **[Account Settings](https://dashboard.heroku.com/account)** -> API Keys)
   * APP_NAME (the name of the Heroku application, this must be unique across Heroku and will fail if it is not)
   * EMAIL_ADDRESS (your Epic Games email address)
   * EPIC_GAMES_PASSWORD (your Epic Games password)
