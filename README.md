@@ -1,5 +1,5 @@
 # epicgames-freegames-node on Heroku for Free!
-Deploy [epicgames-freegames-node](https://github.com/claabs/epicgames-freegames-node) in Heroku for free via Github1
+Deploy [epicgames-freegames-node](https://github.com/claabs/epicgames-freegames-node) in Heroku for free via Github!
 
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/davidjameshowell/epicgames-freegames-heroku/EpicGamesFreeGamesDeploy/main?label=Deploy%20EpicGames-FreeGames-Node&style=for-the-badge)
 
@@ -12,10 +12,10 @@ Deploy [epicgames-freegames-node](https://github.com/claabs/epicgames-freegames-
 [![CodeFactor](https://www.codefactor.io/repository/github/davidjameshowell/epicgames-freegames-heroku/badge)](https://www.codefactor.io/repository/github/davidjameshowell/epicgames-freegames-heroku)
 
 ## Features
-* Build and deploy cutomized EpicGames-FreeGames-node image from source to Heroku via Github Actions
-* Presistent Login Cookie stored via Redis
+* Build and deploy customized EpicGames-FreeGames-node image from source to Heroku via Github Actions
+* Persistent Login Cookie stored via Redis
 * Reset stuck cookie via Github Actions
-* Maintanable updates with Git Hash for future updates
+* Maintainable updates with Git Hash for future updates
 * Easily extendable for future tweaks
 
 ## Usage
@@ -26,8 +26,8 @@ Usage is simply, fast, and user friendly! The application will run each hour aft
 
 1. Create a fork of this project
 2. Go to your forked repo Settings > Secrets and add secrets for:
-  * HEROKU_API_KEY (yoru Heroku API key - can be found in **[Account Setings](https://dashboard.heroku.com/account)** -> APi Keys)
-  * APP_NAME (the name of the Heroku application, this must be unqiue across Heroku and will fail if it is not)
+  * HEROKU_API_KEY (your Heroku API key - can be found in **[Account Settings](https://dashboard.heroku.com/account)** -> API Keys)
+  * APP_NAME (the name of the Heroku application, this must be unique across Heroku and will fail if it is not)
   * EMAIL_ADDRESS (your Epic Games email address)
   * EPIC_GAMES_PASSWORD (your Epic Games password)
   * TEMPORARY_EMAIL_COOKIE (a base64 encoded starting cookie, please see temporary cookie generation below)
@@ -53,7 +53,7 @@ Should you have any issues with your token in running the application, you can r
 
 ### Email CAPTCHA Support
 
-Email captchas are supported with this mechanism and are suppoorted by Mailgun. We are using Mailgun's sandboxed mode which requires you to manually verify your domain in order to prevent the service from being used as spam.
+Email captchas are supported with this mechanism and are supported by Mailgun. We are using Mailgun's sandboxed mode which requires you to manually verify your domain in order to prevent the service from being used as spam.
 
 In order to verify your email address (the variable used for EMAIL_ADDRESS):
 1. Go to your app dashboard in Heroku, find the Mailgun addon.
