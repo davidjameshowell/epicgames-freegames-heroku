@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 APP_NAME=" "
 TOTP_MFA=""
+HCAPTCHA_ACCESSIBILITY_URL=""
 GIT_HASH="master"
 EPICGAMES_FREEGAMES_FOLDER="epicgames-freegames-node"
 STRATEGY_TYPE="deploy"
@@ -29,21 +30,36 @@ function heroku_envar_bootstrap {
     printf "Supressing output due to sensitive nature.\n"
     heroku config:set SMTP_HOST="$(heroku config:get MAILGUN_SMTP_SERVER -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
     heroku config:set SMTP_PORT="465" -a "${APP_NAME}" > /dev/null
+    heroku config:set SMTP_SECURE="true" -a "${APP_NAME}" > /dev/null
     heroku config:set EMAIL_SENDER_ADDRESS="$(heroku config:get MAILGUN_SMTP_LOGIN -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
     heroku config:set EMAIL_SENDER_NAME="[${APP_NAME}] Epic Games Free Captcha" -a "${APP_NAME}" > /dev/null
     heroku config:set EMAIL_RECIPIENT_ADDRESS="${EMAIL_ADDRESS}" -a "${APP_NAME}" > /dev/null
-    heroku config:set SMTP_SECURE="true" -a "${APP_NAME}" > /dev/null
-    heroku config:set SMTP_USERNAME="$(heroku config:get MAILGUN_SMTP_LOGIN -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
-    heroku config:set SMTP_PASSWORD="$(heroku config:get MAILGUN_SMTP_PASSWORD -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
+    #heroku config:set SMTP_USERNAME="$(heroku config:get MAILGUN_SMTP_LOGIN -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
+    #heroku config:set SMTP_PASSWORD="$(heroku config:get MAILGUN_SMTP_PASSWORD -a "${APP_NAME}")" -a "${APP_NAME}" > /dev/null
     heroku config:set EMAIL="${EMAIL_ADDRESS}" -a "${APP_NAME}" > /dev/null
     heroku config:set PASSWORD="${EPIC_GAMES_PASSWORD}" -a "${APP_NAME}" > /dev/null
     heroku config:set BASE_URL="https://${APP_NAME}.herokuapp.com/" -a "${APP_NAME}" > /dev/null
+    heroku config:set PUPPETEER_PURCHASE="true" -a "${APP_NAME}"
+    
     
     if [ ! -z "${TOTP_MFA}" ]
     then
         printf "Also adding in MFA OTP code to be solved.\n"
         printf "Supressing output due to sensitive nature.\n"
         heroku config:set TOTP="${TOTP_MFA}" -a "${APP_NAME}" > /dev/null
+    fi
+
+    if [ ! -z "${HCAPTCHA_ACCESSIBILITY_URL}" ]
+    then
+        printf "Also adding in MFA OTP code to be solved.\n"
+        printf "Supressing output due to sensitive nature.\n"
+        heroku config:set HCAPTCHA_ACCESSIBILITY_URL="${HCAPTCHA_ACCESSIBILITY_URL}" -a "${APP_NAME}" > /dev/null
+    fi
+
+    printf "Add app config to Redis.\n"
+    if  [ -n "${APP_CONFIG}" ]
+    then
+        redis-cli -u "$(heroku config:get REDISTOGO_URL -a "${APP_NAME}")" set APP_CONFIG "${APP_CONFIG}" > /dev/null
     fi
 
     printf "Set run once parameters.\n"
@@ -90,6 +106,7 @@ function build_image {
     printf "We are additionally adding logic to capture and set the Email Cookie for continued runs.\n"
     sed_files '2 a export SERVER_PORT=\$PORT\n' ./entrypoint.sh
     sed_files '3 a if ! [ -z $(redis-cli -u \$REDISTOGO_URL get EMAIL_COOKIE) ]; then touch /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json && redis-cli -u \$REDISTOGO_URL get EMAIL_COOKIE | base64 -d > /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json; fi' ./entrypoint.sh
+    sed_files '4 a if ! [ -z $(redis-cli -u \$REDISTOGO_URL get APP_CONFIG) ]; then touch /usr/app/config/config.json && redis-cli -u \$REDISTOGO_URL get APP_CONFIG | base64 -d > /usr/app/config/config.json; fi' ./entrypoint.sh
     sed_files '$a if [ -s /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json ]; then echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL -x set EMAIL_COOKIE; fi' ./entrypoint.sh
 
     # Dockerfile manipulation to install redis

@@ -12,6 +12,8 @@ env:
   GIT_HASH: master
   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
   TOTP_MFA: ${{ secrets.TOTP_MFA }}
+  APP_CONFIG: ${{ secrets.APP_CONFIG }}
+  HCAPTCHA_ACCESSIBILITY_URL: ${{ secrets.HCAPTCHA_ACCESSIBILITY_URL }}
 
 jobs:
   update_app:
