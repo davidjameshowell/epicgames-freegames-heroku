@@ -3,8 +3,6 @@ set -euo pipefail
 
 SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 APP_NAME=" "
-TOTP_MFA=""
-HCAPTCHA_ACCESSIBILITY_URL=""
 GIT_HASH="master"
 EPICGAMES_FREEGAMES_FOLDER="epicgames-freegames-node"
 STRATEGY_TYPE="deploy"
