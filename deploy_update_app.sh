@@ -49,14 +49,15 @@ function heroku_envar_bootstrap {
 
     if [ ! -z "${HCAPTCHA_ACCESSIBILITY_URL}" ]
     then
-        printf "Also adding in MFA OTP code to be solved.\n"
+        printf "Also adding in HCAPTCHA Accessibility URL for better success.\n"
         printf "Supressing output due to sensitive nature.\n"
         heroku config:set HCAPTCHA_ACCESSIBILITY_URL="${HCAPTCHA_ACCESSIBILITY_URL}" -a "${APP_NAME}" > /dev/null
     fi
 
-    printf "Add app config to Redis.\n"
+
     if  [ -n "${APP_CONFIG}" ]
     then
+        printf "Add app config to Redis.\n"
         redis-cli -u "$(heroku config:get REDISTOGO_URL -a "${APP_NAME}")" set APP_CONFIG "${APP_CONFIG}" > /dev/null
     fi
 
@@ -83,9 +84,9 @@ function heroku_bootstrap {
     
     heroku_envar_bootstrap
     
-    printf "Add in initial cookie configuration for Redis if configured, supress output.\n"
     if  [ -n "${TEMPORARY_EMAIL_COOKIE}" ]
     then
+        printf "Add in initial cookie configuration for Redis if configured, supress output.\n"
         redis-cli -u "$(heroku config:get REDISTOGO_URL -a "${APP_NAME}")" set EMAIL_COOKIE "${TEMPORARY_EMAIL_COOKIE}" > /dev/null
     fi
 }
@@ -108,7 +109,7 @@ function build_image {
     sed_files '$a if [ -s /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json ]; then echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL -x set EMAIL_COOKIE; fi' ./entrypoint.sh
 
     # Dockerfile manipulation to install redis
-    sed_files 's/tzdata /tzdata redis/g' ./Dockerfile
+    sed_files 's/npm ci --only=production /npm ci --only=production && redis/g' ./Dockerfile
     
     heroku container:push web -a "${APP_NAME}"
 
