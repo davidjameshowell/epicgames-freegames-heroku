@@ -111,6 +111,8 @@ function build_image {
     # Dockerfile manipulation to install redis
     sed_files 's/RUN npm ci \-\-only\=production/RUN npm ci \-\-only\=production \&\& apk add redis \-\-no\-cache/g' ./Dockerfile
     
+    cat ./entrypoint.sh
+
     heroku container:push web -a "${APP_NAME}"
 
     printf "Now we can release the app which will publish it.\n"
