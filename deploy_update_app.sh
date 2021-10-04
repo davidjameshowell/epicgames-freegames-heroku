@@ -108,13 +108,13 @@ function build_image {
     #sed_files '3 a if ! [ -z $(redis-cli -u \$REDISTOGO_URL get EMAIL_COOKIE) ]; then mkdir -p /usr/app/config && touch /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json && redis-cli -u \$REDISTOGO_URL get EMAIL_COOKIE | base64 -d > /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json; fi' ./entrypoint.sh
     #sed_files '4 a if ! [ -z $(redis-cli -u \$REDISTOGO_URL get APP_CONFIG) ]; then echo "Adding App Config from redis url \${REDISTOGO_URL}" && mkdir -p /usr/app/config && touch /usr/app/config/config.json && redis-cli -u \$REDISTOGO_URL get APP_CONFIG | base64 -d > /usr/app/config/config.json; fi' ./entrypoint.sh
     #sed_files '$a if [ -s /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json ]; then echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL -x set EMAIL_COOKIE; fi' ./entrypoint.sh
-    sed_files '3 a if ! [ -z ${APP_CONFIG} ]; then echo "Adding App Config from env var" && mkdir -p /usr/app/config && touch /usr/app/config/config.json && echo ${APP_CONFIG} | base64 -d > /usr/app/config/config.json; fi' ./entrypoint.sh
+    #sed_files '3 a if ! [ -z ${APP_CONFIG} ]; then echo "Adding App Config from env var" && mkdir -p /usr/app/config && touch /usr/app/config/config.json && echo ${APP_CONFIG} | base64 -d > /usr/app/config/config.json; fi' ./entrypoint.sh
 
 
     # Dockerfile manipulation to install redis
-    sed_files 's/RUN npm ci \-\-only\=production/RUN npm ci \-\-only\=production \&\& apk add redis \-\-no\-cache/g' ./Dockerfile
+    #sed_files 's/RUN npm ci \-\-only\=production/RUN npm ci \-\-only\=production \&\& apk add redis \-\-no\-cache/g' ./Dockerfile
     
-    cat ./entrypoint.sh
+    #cat ./entrypoint.sh
 
     heroku container:push web -a "${APP_NAME}"
 
