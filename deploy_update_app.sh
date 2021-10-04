@@ -109,7 +109,7 @@ function build_image {
     sed_files '$a if [ -s /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json ]; then echo $(cat /usr/app/config/'${EMAIL_ADDRESS}'-cookies.json | base64) | redis-cli -u \$REDISTOGO_URL -x set EMAIL_COOKIE; fi' ./entrypoint.sh
 
     # Dockerfile manipulation to install redis
-    sed_files 's/npm ci --only=production /npm ci --only=production && redis/g' ./Dockerfile
+    sed_files 's/RUN npm ci \-\-only\=production/RUN npm ci \-\-only\=production \&\& apk add redis \-\-no\-cache/g' ./Dockerfile
     
     heroku container:push web -a "${APP_NAME}"
 
